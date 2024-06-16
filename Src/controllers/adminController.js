@@ -157,12 +157,13 @@ const getSubCategory = async (req, res) => {
 //--------------------------create product---------------------
 
 const createProduct = async (req, res) => {
-  console.log("hy");
   const { title, ram, price, description,category } = req.body;
+  console.log(title,ram,price,description,category);
+  
   let urls = [];
 
   const subCategoryId = req.params.subCategoryId;
-  
+  console.log(subCategoryId,"dged");
 
   // Check if the product exists
   const existingProduct = await product.findOne({
@@ -182,10 +183,9 @@ const createProduct = async (req, res) => {
   // Create a new product
 
   const uploader = async (path) => await cloudinary.uploads(path, "images");
-  console.log("hy");
   if (req.method == "POST") {
     const files = req.files;
-
+    console.log("files",files);
     for (const file of files) {
       const { path } = file;
 
@@ -193,7 +193,7 @@ const createProduct = async (req, res) => {
 
       urls.push(newPath);
 
-      // fs.unlinkSync(path);
+      fs.unlinkSync(path);
     }
 
     
@@ -212,7 +212,7 @@ const createProduct = async (req, res) => {
   
     return res.status(201).json({
       status: "success",
-      message: "Product added to subcategory successfully",
+      message: "Product created successfully",
       data: newProduct,
     });
 
