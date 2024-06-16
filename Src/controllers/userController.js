@@ -8,7 +8,6 @@ const jwt=require("jsonwebtoken")
 
 const userRegister = async (req, res) => {
   const { name, email, password } = req.body;
-  console.log(req.body);
   const identifyUser = await user.findOne({ email: email });
 
   if (identifyUser) {
@@ -39,8 +38,18 @@ const userRegister = async (req, res) => {
 
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
+   console.log(email,password);
+
+  if(email===process.env.admin_Email&&password===process.env.admin_password){
+    return res.status(200).json({
+      status: "success",
+      message: "admin logged in successfully",
+      type:"admin"
+    })
+  }
 
   const identifyUser = await user.findOne({ email: email });
+  console.log(identifyUser);
   if (!identifyUser) {
     return res.json({
       status: "failure",
@@ -49,8 +58,8 @@ const userLogin = async (req, res) => {
     });
   } 
 
-  const existingUser=await bcrypt.compare(identifyUser.password,password)
-
+  const existingUser=await bcrypt.compare(password,identifyUser.password,)
+  console.log(existingUser);
   if(!existingUser){
     return res.status(404).json({
       status:"failure",
@@ -64,6 +73,8 @@ const userLogin = async (req, res) => {
     return res.status(200).json({
       status: "success",
       message: "User logged in successfully",
+      type:"user",
+      id:identifyUser._id,
       data:token
     });
   }

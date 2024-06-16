@@ -2,6 +2,8 @@ const admin = require("../models/adminSchema");
 const categories = require("../models/categorySchema");
 const subCategories = require("../models/subCategorySchema");
 const product = require("../models/productSchema");
+const cloudinary=require("../middleWares/cloudinary")
+const fs = require("fs");
 
 //----------------------admin register-------------------
 
@@ -135,7 +137,7 @@ const createSubCategory = async (req, res) => {
 //-------------------------get subCategory--------------------
 
 const getSubCategory = async (req, res) => {
-  const findSubCategory = await subCategories.find();
+  const findSubCategory = await subCategories.find().populate("category");
 
   if (findSubCategory === 0) {
     return res.status(404).json({
@@ -155,8 +157,10 @@ const getSubCategory = async (req, res) => {
 //--------------------------create product---------------------
 
 const createProduct = async (req, res) => {
-  const { title, ram, price, description, countInStock, image } = req.body;
-  
+  console.log("hy");
+  const { title, ram, price, description,category } = req.body;
+  let urls = [];
+
   const subCategoryId = req.params.subCategoryId;
   
 
@@ -176,24 +180,47 @@ const createProduct = async (req, res) => {
   }
 
   // Create a new product
-  const newProduct = new product({
-    title,
-    ram,
-    price,
-    subCategory: subCategoryId,
-    description,
-    countInStock,
-    image,
-  });
 
-  // Save the product
-  await newProduct.save();
+  const uploader = async (path) => await cloudinary.uploads(path, "images");
+  console.log("hy");
+  if (req.method == "POST") {
+    const files = req.files;
 
-  return res.status(201).json({
-    status: "success",
-    message: "Product added to subcategory successfully",
-    data: newProduct,
-  });
+    for (const file of files) {
+      const { path } = file;
+
+      const newPath = await uploader(path);
+
+      urls.push(newPath);
+
+      // fs.unlinkSync(path);
+    }
+
+    
+    const newProduct = new product({
+      title,
+      ram,
+      price,
+      subCategory: subCategoryId,
+      description,
+      category,
+      image:urls
+    });
+  
+    // Save the product
+    await newProduct.save();
+  
+    return res.status(201).json({
+      status: "success",
+      message: "Product added to subcategory successfully",
+      data: newProduct,
+    });
+
+  
+  }
+
+
+  
 };
 
 //-----------------------------get products----------------------------------

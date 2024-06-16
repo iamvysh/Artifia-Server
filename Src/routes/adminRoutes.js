@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const tryCatch = require("../middleWares/tryCatch");
 const admin = require("../controllers/adminController");
+const upload=require("../middleWares/multer")
 
 router
   .post("/admin/register", tryCatch(admin.adminRegister))
@@ -12,7 +13,7 @@ router
   .post("/admin/create/subcategory/:id",tryCatch(admin.createSubCategory))
   .get("/admin/get/subcategory",tryCatch(admin.getSubCategory))
 
-  .post("/admin/create/product/:subCategoryId",tryCatch(admin.createProduct))
+  .post("/admin/create/product/:subCategoryId",upload.array("images",5),tryCatch(admin.createProduct))
   .get("/admin/get/products",tryCatch(admin.getProducts))
   .put("/admin/update/product/:productId",tryCatch(admin.updateProduct))
   .get("/search",tryCatch(admin.searchProduct))

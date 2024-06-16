@@ -13,6 +13,10 @@ const productSchema = mongoose.Schema({
         type: Number,
         default:0
     },
+    category:{
+        type:String,
+
+    },
     subCategory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'SubCategory',
@@ -22,14 +26,14 @@ const productSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    countInStock: {
-        type: Number,
-        required: true,
-        min: 0,
-        max: 255
-    },
+    // countInStock: {
+    //     type: Number,
+    //     required: true,
+    //     min: 0,
+    //     max: 255
+    // },
     image:{
-        type:String,
+        type:[],
         require:true
     }
 })
